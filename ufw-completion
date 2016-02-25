@@ -1,0 +1,136 @@
+# vim: ft=sh 
+#                      
+#          ____        
+#   __  __/ __/      __
+#  / / / / /_| | /| / /
+# / /_/ / __/| |/ |/ / 
+# \__,_/_/   |__/|__/  
+#                      
+#
+_ufw() {
+  local cur prev opts base
+  _get_comp_words_by_ref -n : cur
+  COMPREPLY=()
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  prev="${COMP_WORDS[COMP_CWORD-1]}"
+  last="${COMP_WORDS[COMP_CWORD-2]}"
+
+  commands="--dry-run enable disable default logging allow deny reject limit delete insert route route route reload reset status status status show version app"
+  help_lookup=""
+
+  # enable                          enables the firewall
+  # disable                         disables the firewall
+  # default ARG                     set default policy
+  # logging LEVEL                   set logging to LEVEL
+  # allow ARGS                      add allow rule
+  # deny ARGS                       add deny rule
+  # reject ARGS                     add reject rule
+  # limit ARGS                      add limit rule
+  # delete RULE|NUM                 delete RULE
+  # insert NUM RULE                 insert RULE at NUM
+  # route RULE                      add route RULE
+  # route delete RULE|NUM           delete route RULE
+  # route insert NUM RULE           insert route RULE at NUM
+  # reload                          reload firewall
+  # reset                           reset firewall
+  # status                          show firewall status
+  # status numbered                 show firewall status as numbered list of RULES
+  # status verbose                  show verbose firewall status
+  # show ARG                        show firewall report
+  # version                         display version information
+  # Application profile commands:
+  # app list                        list application profiles
+  # app info PROFILE                show information on PROFILE
+  # app update PROFILE              update PROFILE
+  # app default ARG                 set default application policy
+
+  case "${prev}" in
+    help )
+      args=$(for word in $help_lookup;do echo "$word";done)
+      COMPREPLY=( $(compgen -W "${args}" -- "${cur}") )
+      return 0
+      ;;
+    status)
+      COMPREPLY=( $(compgen -W "numbered verbose" -- "${cur}") )
+      return 0
+      ;;
+    logging)
+      COMPREPLY=( $(compgen -W "off on low medium high full" -- "${cur}") )
+      return 0
+      ;;
+    show )
+      COMPREPLY=( $(compgen -W "raw builtins before-rules user-rules after-rules logging-rules listening added" -- "${cur}") )
+      return 0
+      ;;
+    allow)
+      COMPREPLY=( $(compgen -W "to from" -- "${cur}") )
+      return 0
+      ;;
+    route)
+      COMPREPLY=( $(compgen -W "delete insert" -- "${cur}") )
+      return 0
+      ;;
+    info)
+      args=$(ufw app list|awk '{if(NR>1) {print }}')
+      COMPREPLY=( $(compgen -W "${args}" -- "${cur}") )
+      return 0
+      ;;
+    app)
+      COMPREPLY=( $(compgen -W "list info update default" -- "${cur}") )
+      return 0
+      ;;
+    device|edit|get|set|unset|show|trust) 
+      if [ $last == "config" ]; then
+        args=$(ufw remote list|awk '{if(NR>2) {print $2}}')
+      fi
+      COMPREPLY=( $(compgen -W "${args}" -- "${cur}") )
+      return 0
+      ;;
+
+    exec|restart|stop|start|info|delete)
+      args=$(ufw list|awk '{if(NR>2) {print $2}}')
+      COMPREPLY=( $(compgen -W "${args}" -- "${cur}") )
+      return 0
+      ;;
+    # ufw remote add <name> <url> [--accept-certificate] [--password=PASSWORD] [--public]    Add the remote <name> at <url>.
+    # ufw remote remove <name>                                                               Remove the remote <name>.
+    # ufw remote list                                                                        List all remotes.
+    # ufw remote rename <old> <new>                                                          Rename remote <old> to <new>.
+    # ufw remote set-url <name> <url>                                                        Update <name>'s url to <url>.
+    # ufw remote set-default <name>                                                          Set the default remote.
+    # ufw remote get-default                                                                 Print the default remote.
+    # 
+    # shawn@apollo [539][1sj][pts/0] ~/ufw-completion
+    # $ ufw remote  list
+    # +--------+-----------------------------------------+--------+
+    # |  NAME  |                   URL                   | PUBLIC |
+    # +--------+-----------------------------------------+--------+
+    # | images | https://images.linuxcontainers.org:8443 | YES    |
+    # | local  | unix://                                 | NO     |
+    # +--------+-----------------------------------------+--------+
+    remote )
+      COMPREPLY=( $(compgen -W "add remove list rename set-url set-default get-default" -- "${cur}") )
+      return 0
+      ;;
+    add|set-default|set-url|rename|remove|snapshot)
+      if [ $last == "remote" ]; then
+        args=$(ufw remote list|awk '{if(NR>2) {print $2}}')
+      fi
+      COMPREPLY=( $(compgen -W "${args}" -- "${cur}") )
+      return 0
+      ;;
+
+    file)
+      COMPREPLY=( $(compgen -W "pull push" -- "${cur}") )
+      return 0
+      ;;
+
+  esac
+
+  COMPREPLY=($(compgen -W "${commands}" -- "${cur}"))
+  __ltrim_colon_completions "$cur"
+  return 0
+}
+
+complete -F _ufw ufw
+
