@@ -1,9 +1,9 @@
 # ufw-completion
-Basic bash completion for the `ufw` and `lxd` utilities.  See [lxd](https://linuxcontainers.org). 
+Basic bash completion for the `ufw` utilitie.  
 
 ## Installation
 
-Tested on Ubuntu so far. 
+Tested on Ubuntu only so far. 
 
 `./install.sh` 
 
@@ -11,4 +11,3 @@ Tested on Ubuntu so far.
 
 `ufw <tab>` 
 --
-`lxd <tab>` 
