@@ -74,7 +74,7 @@ _ufw() {
       COMPREPLY=( $(compgen -W "delete insert" -- "${cur}") )
       return 0
       ;;
-    info)
+    info|update)
       args=$(ufw app list|awk '{if(NR>1) {print }}')
       COMPREPLY=( $(compgen -W "${args}" -- "${cur}") )
       return 0
