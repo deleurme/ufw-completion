@@ -15,7 +15,7 @@ _ufw() {
   prev="${COMP_WORDS[COMP_CWORD-1]}"
   last="${COMP_WORDS[COMP_CWORD-2]}"
 
-  commands="--dry-run enable disable default logging allow deny reject limit delete insert route route route reload reset status status status show version app"
+  commands="--dry-run enable disable default logging allow deny reject limit delete insert prepend route route route reload reset status status status show version app"
   help_lookup=""
 
   # enable                          enables the firewall
@@ -28,6 +28,7 @@ _ufw() {
   # limit ARGS                      add limit rule
   # delete RULE|NUM                 delete RULE
   # insert NUM RULE                 insert RULE at NUM
+  # prepend RULE                    prepend RULE to top
   # route RULE                      add route RULE
   # route delete RULE|NUM           delete route RULE
   # route insert NUM RULE           insert route RULE at NUM
