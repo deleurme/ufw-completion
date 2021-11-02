@@ -1,4 +1,4 @@
 #!/bin/bash
 # vim:ft=sh
 
-cp ufw-completion /etc/bash_completion.d/
+install -p --mode=644 ufw-completion /etc/bash_completion.d/
